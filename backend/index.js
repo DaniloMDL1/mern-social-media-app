@@ -7,6 +7,8 @@ import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 import postRoutes from "./routes/postRoutes.js"
 import commentRoutes from "./routes/commentRoutes.js"
+import conversationRoutes from "./routes/conversationRoutes.js"
+import messageRoutes from "./routes/messageRoutes.js"
 
 dotenv.config()
 const app = express()
@@ -26,6 +28,8 @@ app.use("/api/auth", authRoutes)
 app.use("/api/users", userRoutes)
 app.use("/api/posts", postRoutes)
 app.use("/api/comments", commentRoutes)
+app.use("/api/conversations", conversationRoutes)
+app.use("/api/messages", messageRoutes)
 
 const PORT = process.env.PORT || 6001
 connectToMongoDB()
