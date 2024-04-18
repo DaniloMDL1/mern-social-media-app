@@ -160,8 +160,9 @@ export const getUserFollowings = async (req, res) => {
 export const searchForUsers = async (req, res) => {
     try {
         const { searchTerm } = req.query
+        const loggedInUserId = req.user.userId
 
-        const users = await User.find({ $or: [
+        const users = await User.find({ _id: { $ne: loggedInUserId }, $or: [
             { fullName: { $regex: searchTerm, $options: "i"}},
             { username: { $regex: searchTerm, $options: "i"}}
         ]}).select("_id profilePicture username")

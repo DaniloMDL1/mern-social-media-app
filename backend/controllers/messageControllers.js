@@ -35,3 +35,20 @@ export const getConversationMessages = async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 }
+
+export const deleteMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params
+
+        const message = await Message.findById(messageId)
+        if(!message) return res.status(404).json({ error: "Message not found." })
+
+        await Message.findByIdAndDelete(messageId)
+
+        res.status(200).json({ msg: "Message has been successfully deleted." })
+        
+    } catch(error) {
+        console.log(error)
+        res.status(500).json({ error: error.message })
+    }
+}

@@ -2,25 +2,50 @@ import { Avatar, Box, Flex, Input, InputGroup, InputRightElement, Modal, ModalBo
 import { SearchIcon } from "@chakra-ui/icons"
 import { useState } from "react"
 import { useSearchForUsersQuery } from "../redux/user/usersApi"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useCreateConversationMutation } from "../redux/conversations/conversationsApi"
+import useShowToast from "../hooks/useShowToast"
+import { useSelector } from "react-redux"
 
 const SearchUsersInput = () => {
+    const { user } = useSelector((state) => state.user)
     const [searchTerm, setSearchTerm] = useState("")
 
     const navigate = useNavigate()
+    const { pathname } = useLocation()
 
     const { isOpen, onOpen, onClose } = useDisclosure()
     const { colorMode, toggleColorMode } = useColorMode()
 
+    const showToast = useShowToast()
+
     const { data: searchUsersData, isLoading: isSearchUsersDataLoading } = useSearchForUsersQuery({ searchTerm })
+
+    const [ createConversationApi, { isLoading: isCreateConversationLoading }] = useCreateConversationMutation()
+
+    const handleCreateConversation = async (receiverId) => {
+        if(isCreateConversationLoading) return
+        try {
+            const res = await createConversationApi({ senderId: user._id, receiverId }).unwrap()
+            
+        } catch(error) {
+            if(error.data) {
+                showToast("Error", error.data.error, "error")
+            } else {
+                showToast("Error", error.message, "error")
+            }
+        }
+    }
 
     return (
         <>
-            <Box display={{ base: "block", md: "none"}}>
-                <SearchIcon onClick={onOpen} fontSize={22} cursor={"pointer"}/>
-            </Box>
-            <Box display={{ base: "none", md: "block"}}>
-                <InputGroup width={{ base: "200px", md: "180px", lg: "280px"}}>
+            {pathname !== "/chat" && (
+                <Box display={{ base: "block", md: "none"}}>
+                    <SearchIcon onClick={onOpen} fontSize={22} cursor={"pointer"}/>
+                </Box>
+            )}
+            <Box display={{ base: pathname === "/chat" ? "block" : "none", md: "block"}}>
+                <InputGroup width={"100%"}>
                     <Input onClick={onOpen} type="text" placeholder="Search for users"/>
                     <InputRightElement>
                         <SearchIcon color={"gray"}/>
@@ -55,6 +80,11 @@ const SearchUsersInput = () => {
                             <VStack width={"full"} alignItems={"flex-start"} gap={0}>
                                 {searchUsersData.map((searchUser) => (
                                     <Box key={searchUser._id} width={"full"} onClick={() => {
+                                        if(pathname === "/chat") {
+                                            handleCreateConversation(searchUser._id)
+                                            onClose()
+                                            return
+                                        }
                                         navigate(`/profile/${searchUser.username}`)
                                         onClose()
                                         setSearchTerm("")

@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit"
 import userReducer from "./user/userSlice"
+import conversationsReducer from "./conversations/conversationsSlice"
 import { api } from "./api"
 
 const store = configureStore({
     reducer: {
         user: userReducer,
-        [api.reducerPath]: api.reducer
+        [api.reducerPath]: api.reducer,
+        conversations: conversationsReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
     devTools: true

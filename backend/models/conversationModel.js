@@ -7,11 +7,7 @@ const conversationSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
             }
-        ],
-        messages: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Message"
-        }
+        ]
     },
     {
         timestamps: true

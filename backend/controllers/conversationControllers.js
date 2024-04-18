@@ -30,7 +30,7 @@ export const getConversations = async (req, res) => {
     try {
         const { userId } = req.params
 
-        const conversations = await Conversation.find({ participants: { $in: [userId]}}).populate("messages").sort({ "messages.createdAt": -1 })
+        const conversations = await Conversation.find({ participants: { $in: [userId]}})
 
         res.status(200).json(conversations)
         
