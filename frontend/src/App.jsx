@@ -20,7 +20,7 @@ const App = () => {
 
   useEffect(() => {
     if(user) {
-      const socketInstance = io("http://localhost:3001", {
+      const socketInstance = io("https://social-media-app-bv78.onrender.com", {
         query: {
           userId: user._id
         }
