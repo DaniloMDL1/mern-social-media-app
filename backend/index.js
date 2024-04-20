@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
+import path from "path"
 import connectToMongoDB from "./db/connectToMongoDB.js"
 import { v2 as cloudinary } from "cloudinary"
 import authRoutes from "./routes/authRoutes.js"
@@ -11,6 +12,7 @@ import conversationRoutes from "./routes/conversationRoutes.js"
 import messageRoutes from "./routes/messageRoutes.js"
 import { app, server } from "./socket/socket.js"
 
+const __dirname = path.resolve()
 dotenv.config()
 app.use(express.json({ limit: "30mb" }))
 app.use(express.urlencoded({ limit: "30mb", extended: true }))
@@ -30,6 +32,12 @@ app.use("/api/posts", postRoutes)
 app.use("/api/comments", commentRoutes)
 app.use("/api/conversations", conversationRoutes)
 app.use("/api/messages", messageRoutes)
+
+app.use(express.static(path.join(__dirname, "/frontend/dist")))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "dist", "index.html"))
+})
 
 const PORT = process.env.PORT || 6001
 connectToMongoDB()
