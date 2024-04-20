@@ -32,6 +32,15 @@ const Message = ({ message }) => {
         }
     }
 
+    const handleCopyMessage = async () => {
+        try {
+            await navigator.clipboard.writeText(message.message)
+            showToast("Success", "Message has been copied successfully.", "success")
+        } catch(error) {
+            showToast("Error", "Failed to copy the message.", "error")
+        }
+    }
+
     return (
         <>
             {message.senderId === user._id ? (
@@ -50,7 +59,7 @@ const Message = ({ message }) => {
                             <MenuItem onClick={onOpen} as={Text} background={colorMode === "dark" ? "#27272a" : "#f3f4f6"} cursor={"pointer"} _hover={{ background: colorMode ==="dark" ? "#404040" : "#f8fafc"}}>
                                 Unsend
                             </MenuItem>
-                            <MenuItem as={Text} background={colorMode === "dark" ? "#27272a" : "#f3f4f6"} mt={1} cursor={"pointer"} _hover={{ background: colorMode ==="dark" ? "#404040" : "#f8fafc"}}>
+                            <MenuItem onClick={handleCopyMessage} as={Text} background={colorMode === "dark" ? "#27272a" : "#f3f4f6"} mt={1} cursor={"pointer"} _hover={{ background: colorMode ==="dark" ? "#404040" : "#f8fafc"}}>
                                 Copy
                             </MenuItem>
                         </MenuList>
