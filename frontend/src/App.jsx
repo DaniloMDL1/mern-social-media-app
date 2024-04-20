@@ -7,10 +7,39 @@ import UpdateProfilePage from "./pages/UpdateProfilePage"
 import UserProfilePage from "./pages/UserProfilePage"
 import CreatePostPage from "./pages/CreatePostPage"
 import ChatPage from "./pages/ChatPage"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react"
+import { setOnlineUsers, setSocket } from "./redux/socket/socketSlice"
+import io from "socket.io-client"
 
 const App = () => {
   const { user } = useSelector((state) => state.user)
+  const { socket } = useSelector((state) => state.socket)
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if(user) {
+      const socketInstance = io("http://localhost:3001", {
+        query: {
+          userId: user._id
+        }
+      })
+  
+      dispatch(setSocket(socketInstance))
+    } else {
+      socket?.close()
+      dispatch(setSocket(null))
+    }
+  }, [dispatch, setSocket, user])
+
+  useEffect(() => {
+    if(user) {
+      socket?.on("getOnlineUsers", (users) => {
+        dispatch(setOnlineUsers(users))
+      })
+    }
+  }, [socket, dispatch, setOnlineUsers, user])
 
   return (
     <>

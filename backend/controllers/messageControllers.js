@@ -1,4 +1,5 @@
 import Message from "../models/messageModel.js"
+import { getReceiverSocketId, io } from "../socket/socket.js"
 
 export const sendMessage = async (req, res) => {
     try {
@@ -13,6 +14,12 @@ export const sendMessage = async (req, res) => {
             receiverId
         })
         const savedMessage = await newMessage.save()
+
+        const receiverSocketId = getReceiverSocketId(receiverId)
+
+        if(receiverSocketId) {
+            io.to(receiverSocketId).emit("sendMessage", savedMessage)
+        }
 
         res.status(201).json(savedMessage)
         
@@ -44,6 +51,8 @@ export const deleteMessage = async (req, res) => {
         if(!message) return res.status(404).json({ error: "Message not found." })
 
         await Message.findByIdAndDelete(messageId)
+
+        io.emit("deleteMessage", messageId)
 
         res.status(200).json({ msg: "Message has been successfully deleted." })
         
